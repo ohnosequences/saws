@@ -1,3 +1,5 @@
+# aws keys
+AwsCredentials.properties
 
 # sbt specific
 dist/*

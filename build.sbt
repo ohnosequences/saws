@@ -29,7 +29,10 @@ resolvers ++= Seq (
   )
 
 libraryDependencies ++= Seq(
-  "com.chuusai" %% "shapeless" % "1.2.4"
+  "com.chuusai" %% "shapeless" % "1.2.4",
+  "com.amazonaws" % "aws-java-sdk" % "1.3.26",
+  "com.novocode" % "junit-interface" % "0.10-M1" % "test",
+  "net.databinder.dispatch" %% "dispatch-core" % "0.10.0"
 )
 
 scalacOptions ++= Seq(
