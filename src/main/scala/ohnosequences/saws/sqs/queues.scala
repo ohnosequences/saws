@@ -1,5 +1,8 @@
 package ohnosequences.saws.sqs
 
+import ohnosequences.saws.{ResourceAux, StateOf}
+
+
 object QueueTypes {
   
   // bound this here once formats are available
@@ -8,7 +11,7 @@ object QueueTypes {
 
 import QueueTypes._
 
-trait QueueAux {
+trait QueueAux extends ResourceAux {
   
   type service <: SQSServiceAux
   // maybe?
@@ -26,17 +29,11 @@ abstract class Queue[S <: SQSServiceAux](service: S)(name: Name) extends QueueAu
 // http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/Query_QueryCreateQueue.html#Query_CreateQueue_RequestParameters
 // maybe records here instead of case classes
 case class QueueState[Q <: QueueAux](queue: Q)(
-     maxMssgSize: Int = 65536,
-     delaySeconds: Int = 0,
-     mssgRetentionPeriod: Int = 345600,
-     visibilityTimeout: Int = 30
-  ) {
-
-  // add units here
- 
-  // rest of queue attrs here
-  // see http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/Query_QueryCreateQueue.html
-}
+  maxMssgSize: Int = 65536,
+  delaySeconds: Int = 0,
+  mssgRetentionPeriod: Int = 345600,
+  visibilityTimeout: Int = 30
+) extends StateOf[Q](queue) {}
 
 // then, provide concrete class for Queue
 // with package-private constructor
