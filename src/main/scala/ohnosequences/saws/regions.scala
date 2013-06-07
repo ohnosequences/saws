@@ -1,11 +1,12 @@
 package ohnosequences.saws
 
 // regions
-sealed trait Region {
+sealed trait RegionAux {
   val name: String
 }
-case object EU extends Region { val name = "eu-west-1" }
-case object US extends Region { val name = "us_east-1" }
-case object US_WEST_1 extends Region { val name = "us_west-1" }
-case object US_WEST_2 extends Region { val name = "us_west-2" }
-case object US_WEST_3 extends Region { val name = "us_west-3" }
+case object EU extends RegionAux { val name = "eu-west-1" }
+case object US extends RegionAux { val name = "us-east-1" }
+case object US_WEST_1 extends RegionAux { val name = "us-west-1" }
+case object US_WEST_2 extends RegionAux { val name = "us-west-2" }
+case object US_WEST_3 extends RegionAux { val name = "us-west-3" }
+
