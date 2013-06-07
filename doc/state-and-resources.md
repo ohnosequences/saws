@@ -31,14 +31,42 @@ There are some stuff that is dynamic in itself, such as SQS messages. Even more,
 // common stuff for all states
 class MessageState[M <: Message](val message: M, val id: String, val md5: String) {}
 
-case class SentMessage[M <: Message](message: M)(id: String, md5: String) 
-  extends MessageState[M](message, id, md5)
+case class SentMessage[M <: Message](message: M)(
+  id: String, 
+  md5: String
+) extends MessageState[M](message, id, md5)
 // here you have a receiptHandle
-case class ReceivedMessage[M <: Message](message: M)(id: String, md5: String, receiptHandle: String, visibilityTimeout: Int)
-  extends MessageState[M](message, id, md5) 
+case class ReceivedMessage[M <: Message](message: M)(
+  id: String, 
+  md5: String,
+  receiptHandle: String,
+  visibilityTimeout: Int
+) extends MessageState[M](message, id, md5) 
 ```
 
-Then, at the service level methods require the right types for each action.
+Then, at the service level methods require the right types for each action. 
+
+#### `r` in, `r'` out
+
+Think about receiving messages from a queue. You have a `q: Queue` resource as input, and the action `receiveMessages` gives you something like `List[M]` where `M` is a subtype of messages from _that_ queue. This means that is not a good idea to treat resources as state of actions. It is probably much cleaner to think of actions as something which takes as input a term `(r1: R, s1: r1.State)` and produces (an HList of) `(r2: R, s2: r2.State)`. The state of this is the service instance itself that executes this action.
+
+So, without HLists for simplicity:
+
+``` scala
+trait Action { self =>
+
+  type inputResource <: ResourceAux
+  type outputResource <: ResourceAux
+  // we could need vals here or typeclasses to model type dependency
+  type InputState <: StateOfAux { type resource <: self.inputResource }
+  type OutputState <: StateOfAux { type resource <: self.outputResource }
+
+  // plus errors etc etc
+  def execute(r: inputResource, s: InputState): (outputResource, OutputState)
+}
+```
+
+Now _if_ types match you can compose these actions, of course. I need to read on [Kleisli arrows of outrageous fortune](https://personal.cis.strath.ac.uk/conor.mcbride/Kleisli.pdf) to see if something like that would suit here.
 
 ### state nesting
 

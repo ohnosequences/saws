@@ -7,6 +7,11 @@ trait SQSServiceAux extends ServiceAux {
 
   type validRegions = Is[EU.type]#or[US.type]
   val namespace = "sqs"
+
+  // add here bound for queue matching this service
+  // maybe queue.type??
+  // it would be nice if we could bound the state to be just of Q
+  def create[Q <: QueueAux, S <: StateOf[Q]](queue: Q): (Q, S)
 }
 
 abstract class SQSService[
@@ -21,4 +26,4 @@ abstract class SQSService[
 }
 
 // example sqs service
-case object sqs_service extends SQSService(EU, intercrossing)
+// case object sqs_service extends SQSService(EU, intercrossing)
