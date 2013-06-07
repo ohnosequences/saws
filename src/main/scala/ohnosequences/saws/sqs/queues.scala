@@ -11,15 +11,21 @@ object QueueTypes {
 
 import QueueTypes._
 
+// queue resource
+// region etc are derived from service
 trait QueueAux extends ResourceAux {
   
   type service <: SQSServiceAux
   // maybe?
-  // val service: service
+  val service: service
   val name: Name
+  
+  val url = "http://"+ service.namespace +"."+ service.region.name +"."+ service.host +
+            "/"+ service.account.id +"/"+ name
+
 }
 
-abstract class Queue[S <: SQSServiceAux](service: S)(name: Name) extends QueueAux {
+abstract class Queue[S <: SQSServiceAux](val service: S)(val name: Name) extends QueueAux {
   
   type service = S
 }
@@ -48,5 +54,3 @@ case class QueueState[Q <: QueueAux](queue: Q)(
 // - their state is not
 // 
 // which is as far as you can get without full dep types
-
-

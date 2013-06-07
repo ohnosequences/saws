@@ -7,6 +7,9 @@ trait ServiceAux {
   type region <: RegionAux
   type account <: AccountAux
 
+  val region: region
+  val account: account
+
   val host = "amazonaws.com"
   val namespace: String
   def endpoint: String
