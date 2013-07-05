@@ -6,6 +6,7 @@ import shapeless.Sized._
 
 trait AccountAux {
   
+  // this is awkward. Plan to improve this with macros
   type ID = IndexedSeq[Char] Sized _12
   val id: ID
   // need to get more instances of Nats for this to work

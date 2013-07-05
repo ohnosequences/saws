@@ -1,7 +1,7 @@
 
 # resources and their state
 
-In our approach, resources are always declared statically. However, there's a part of them which is transient, time-dependent (including their so to speak "physical" existence there at AWS). 
+In our approach, resources are always declared statically, or at least there's the option of doing that, whenever possible. However, there's a part of them which is transient, time-dependent (including their so to speak "physical" existence there at AWS).
 
 ## resource states
 
@@ -10,11 +10,13 @@ Think of AutoScaling groups, for example. They have state in two seemingly diffe
 1. the group can be declared inside your code, but this doesn't tell you anything about whether it is there at AWS or not. So, you can get the information that this AutoScaling group was there, _at one particular point in time_.
 2. once you know that this thing was there at some point, you can try to gather information about its particular transient state, and act on it (number of instances, etc)
 
-It is thus critical to precisely identify what kind of things can we treat as existing at compile time, and what should instead be part of state. A simple criterion is: if you can modify it after creation, state; if not, resource.
+It is thus critical to precisely identify what kind of things can we treat as existing at compile time, and what should instead be part of state. A simple criterion is: 
+
+> if you can modify it after creation, **state**; if not, **resource**.
 
 ### access to state
 
-As state represents something happening at AWS, it is only natural to interact with it from a corresponding service instance. The context is then 
+As state represents something happening at AWS, it's only natural to interact with it from a corresponding service instance. The context is then 
 
 ``` scala
 // inside service
@@ -66,7 +68,15 @@ trait Action { self =>
 }
 ```
 
+Of course, this snippet is missing multiple input/output resources.
+
+An important point about this is that actions have their input and output state constrained by the corresponding resource type, _but_ they can further refine this type so as to implement action constraints; for example you can only change the visibility timeout of a message that you already received.
+
 Now _if_ types match you can compose these actions, of course. I need to read on [Kleisli arrows of outrageous fortune](https://personal.cis.strath.ac.uk/conor.mcbride/Kleisli.pdf) to see if something like that would suit here.
+
+#### actions and services
+
+For each service we would have an HList of actions which can be performed through it. At this point I'm not sure about what would be the best way to specify this. A cake-like approach could suit our purposes.
 
 ### state nesting
 

@@ -33,7 +33,8 @@ abstract class Queue[S <: SQSServiceAux](val service: S)(val name: Name) extends
 // TODO: this should be a case class
 // with defaults for the default values for attrs
 // http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/Query_QueryCreateQueue.html#Query_CreateQueue_RequestParameters
-// maybe records here instead of case classes
+// maybe records here instead of case classes?
+// should we include approxMssgCount and similar stuff here?
 case class QueueState[Q <: QueueAux](queue: Q)(
   maxMssgSize: Int = 65536,
   delaySeconds: Int = 0,

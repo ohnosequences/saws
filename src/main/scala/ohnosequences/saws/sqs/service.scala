@@ -2,6 +2,8 @@ package ohnosequences.saws.sqs
 
 import ohnosequences.saws._
 import ohnosequences.saws.typeOps._
+import ohnosequences.saws.regions._
+
 
 trait SQSServiceAux extends ServiceAux {
 
