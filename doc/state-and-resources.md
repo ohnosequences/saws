@@ -30,8 +30,9 @@ In the end, for each concrete action implementation your types are completely bo
 There are some stuff that is dynamic in itself, such as SQS messages. Even more, their attributes vary depending on their state: a received message has a receipt handle which lets you delete it from the the queue, something which you don't have when you post a message. The naive solution is to parametrize state:
 
 ``` scala
+// OLD! TODO: update this to reflect the actual code
 // common stuff for all states
-class MessageState[M <: Message](val message: M, val id: String, val md5: String) {}
+abstract class MessageState[M <: Message](val message: M, val id: String, val md5: String) {}
 
 case class SentMessage[M <: Message](message: M)(
   id: String, 
@@ -55,16 +56,16 @@ Think about receiving messages from a queue. You have a `q: Queue` resource as i
 So, without HLists for simplicity:
 
 ``` scala
-trait Action { self =>
+trait AnyAction { self =>
 
-  type inputResource <: ResourceAux
-  type outputResource <: ResourceAux
+  type InputResource <: AnyResource
+  type OutputResource <: AnyResource
   // we could need vals here or typeclasses to model type dependency
-  type InputState <: StateOfAux { type resource <: self.inputResource }
-  type OutputState <: StateOfAux { type resource <: self.outputResource }
+  type InputState   <: AnyStateOf {  type Resource <: self.InputResource   }
+  type OutputState  <: AnyStateOf {  type resource <: self.OutputResource  }
 
   // plus errors etc etc
-  def execute(r: inputResource, s: InputState): (outputResource, OutputState)
+  def execute(r: InputResource, s: InputState): (OutputResource, OutputState)
 }
 ```
 
@@ -82,3 +83,6 @@ For each service we would have an HList of actions which can be performed throug
 
 resources reference/include/depend/whatever on other resources, and thus it is natural to expect that you would/could get references to their state, nested within the state of another resource.
 
+### how exactly?
+
+I'm starting to think that we could keep this as simple hierarchies of case classes and such.

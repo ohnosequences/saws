@@ -1,6 +1,6 @@
 package ohnosequences.saws
 
-trait IAMUserAux {
-  type account <: AccountAux
+trait AnyIAMUser {
+  type Account <: AnyAccount
 }
-trait IAMUser[A <: AccountAux] extends IAMUserAux { type account = A }
+trait IAMUser[A <: AnyAccount] extends AnyIAMUser { type Account = A }

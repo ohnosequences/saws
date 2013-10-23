@@ -1,25 +1,38 @@
 package ohnosequences.saws.sqs
 
-trait MessageAux {
+// should this be a resource? NO, no ARNs for messages
+trait AnyMessage {
 
-  type queue <: QueueAux
-  val queue: queue
+  type Queue <: AnyQueue
+  val queue: Queue
 
   // crappy type here
   val body: String
 }
 
-case class Message[Q <: QueueAux](val queue: Q)(val body: String){ type queue = Q }
+case class Message[Q <: AnyQueue](val queue: Q)(val body: String){ type Queue = Q }
 
-class MessageState[M <: MessageAux](message: M)(id: String, md5: String)
-case class SentMessage[M <: MessageAux](message: M)(
-  id: String,
-  md5: String
-) extends MessageState[M](message)(id, md5)
+sealed trait AnyMessageState {
+
+  type Message <: AnyMessage
+  
+  val message: Message
+  val id: String
+  val md5: String
+}
+
+case class SentMessage[M <: AnyMessage](
+  val message: M,
+  val id: String,
+  val md5: String
+) extends AnyMessageState {  type Message = M  }
 // here you have a receiptHandle
-case class ReceivedMessage[M <: MessageAux](message: M)(
-  id: String, 
-  md5: String, 
-  visibilityTimeout: Int,
-  receiptHandle: String
-) extends MessageState[M](message)(id, md5)
+case class ReceivedMessage[M <: AnyMessage](
+  val message: M,
+  val id: String, 
+  val md5: String, 
+  val visibilityTimeout: Int,
+  val receiptHandle: String
+) extends AnyMessageState {  type Message = M  }
+
+// missing some state here?
