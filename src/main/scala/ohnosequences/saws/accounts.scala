@@ -4,7 +4,7 @@ import shapeless._
 import shapeless.Nat._
 import shapeless.Sized._
 
-trait AccountAux {
+trait AnyAccount {
   
   // this is awkward. Plan to improve this with macros
   type ID = IndexedSeq[Char] Sized _12
