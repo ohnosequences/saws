@@ -1,23 +1,32 @@
-
 import sbtrelease._
 import ReleaseStateTransformations._
 import ReleasePlugin._
 import ReleaseKeys._
 
-
 name := "saws"
+
+homepage := Some(url("https://github.com/ohnosequences/saws"))
 
 organization := "ohnosequences"
 
-scalaVersion := "2.10.1"
+organizationHomepage := Some(url("http://ohnosequences.com"))
+
+licenses += "AGPLv3" -> url("http://www.gnu.org/licenses/agpl-3.0.txt")
 
 
-publishMavenStyle := false
+scalaVersion := "2.10.3"
 
-publishTo <<= (isSnapshot, s3resolver) { 
-                (snapshot,   resolver) => 
+publishMavenStyle := true
+
+// for publishing you need to set `s3credentialsFile`
+publishTo <<= (isSnapshot, s3credentials) { 
+                (snapshot,   credentials) => 
   val prefix = if (snapshot) "snapshots" else "releases"
-  resolver("Era7 "+prefix+" S3 bucket", "s3://"+prefix+".era7.com")
+  credentials map S3Resolver(
+      "Era7 "+prefix+" S3 bucket"
+    , "s3://"+prefix+".era7.com"
+    // , Resolver.ivyStylePatterns
+    ).toSbtResolver
 }
 
 resolvers ++= Seq ( 
@@ -28,34 +37,19 @@ resolvers ++= Seq (
   , "Era7 Snapshots" at "http://snapshots.era7.com.s3.amazonaws.com"
   )
 
-libraryDependencies ++= Seq(
-  "com.chuusai" %% "shapeless" % "1.2.4"
-)
+libraryDependencies ++= Seq (
+    "com.chuusai" %% "shapeless" % "1.2.4"
+  , "org.scalatest" %% "scalatest" % "1.9.2" % "test"
+  )
 
 scalacOptions ++= Seq(
-                      "-feature",
-                      "-language:higherKinds",
-                      "-language:implicitConversions",
-                      "-language:postfixOps",
-                      "-deprecation",
-                      "-unchecked"
-                    )
-
-// sbt-release settings
-
-releaseSettings
-
-releaseProcess <<= thisProjectRef apply { ref =>
-  Seq[ReleaseStep](
-    checkSnapshotDependencies
-  , inquireVersions
-  , runTest
-  , setReleaseVersion
-  , commitReleaseVersion
-  , tagRelease
-  , publishArtifacts
-  , setNextVersion
-  , commitNextVersion
-  , pushChanges
+    "-feature"
+  , "-language:higherKinds"
+  , "-language:implicitConversions"
+  , "-language:postfixOps"
+  , "-deprecation"
+  , "-unchecked"
   )
-}
+
+// sbt-release
+releaseSettings

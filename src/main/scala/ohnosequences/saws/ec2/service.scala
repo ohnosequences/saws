@@ -1,22 +1,22 @@
 package ohnosequences.saws.ec2
 
-import ohnosequences.saws.{ServiceAux, RegionAux, AccountAux}
+import ohnosequences.saws.{AnyService, AnyRegion, AnyAccount}
 import ohnosequences.saws.regions._
 import ohnosequences.saws.typeOps._
 
-trait EC2ServiceAux extends ServiceAux {
+trait AnyEC2Service extends AnyService {
 
-  type validRegions = Is[EU.type]#or[US.type]#or[US_WEST_1.type]
+  type validRegions = Is[EU]#or[US]#or[US_WEST_1]
   val namespace = "ec2"
 }
 
 abstract class EC2Service[
-  R <: RegionAux : oneOf[EC2ServiceAux#validRegions]#λ,
-  A <: AccountAux
-](val region: R, val account: A) extends EC2ServiceAux {
+  R <: AnyRegion : oneOf[EC2ServiceAux#validRegions]#λ,
+  A <: AnyAccount
+](val region: R, val account: A) extends AnyEC2Service {
 
-  type region = R
-  type account = A
+  type Region = R
+  type Account = A
 
   def endpoint = "https://" + namespace +"."+ region.name + host
 }
@@ -25,7 +25,7 @@ abstract class EC2Service[
 
 object test {
 
-  def isOk[R <: RegionAux : oneOf[EC2ServiceAux#validRegions]#λ](region: R) = true
+  def isOk[R <: AnyRegion : oneOf[EC2ServiceAux#validRegions]#λ](region: R) = true
 
   isOk(EU)
   isOk(US)

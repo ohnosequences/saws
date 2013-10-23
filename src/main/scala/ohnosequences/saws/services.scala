@@ -2,17 +2,20 @@ package ohnosequences.saws
 
 import typeOps._
 
-trait ServiceAux {
+trait AnyService {
   
-  type region <: RegionAux
-  type account <: AccountAux
-  val region: region
-  val account: account
+  type Region <: AnyRegion
+  type Account <: AnyAccount
+  // type Auth <: AnyAuth
+  val region: Region
+  val account: Account
+  // val auth: Auth
 
   val host = "amazonaws.com"
   val namespace: String
   // add here isSecure or something similar
   def endpoint: String
+
 }
 
 

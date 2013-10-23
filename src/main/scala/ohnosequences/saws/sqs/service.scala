@@ -5,24 +5,24 @@ import ohnosequences.saws.typeOps._
 import ohnosequences.saws.regions._
 
 
-trait SQSServiceAux extends ServiceAux {
+trait AnySQSService extends AnyService {
 
-  type validRegions = Is[EU.type]#or[US.type]
+  type validRegions = Is[EU]#or[US]
   val namespace = "sqs"
 
   // add here bound for queue matching this service
   // maybe queue.type??
   // it would be nice if we could bound the state to be just of Q
-  def create[Q <: QueueAux, S <: StateOf[Q]](queue: Q): (Q, S)
+  def create[Q <: AnyQueue, S <: StateOf[Q]](queue: Q): (Q, S)
 }
 
 abstract class SQSService[
-  R <: RegionAux : oneOf[SQSServiceAux#validRegions]#λ,
-  A <: AccountAux
-](val region: R, val account: A) extends SQSServiceAux {
+  R <: AnyRegion : oneOf[AnySQSService#validRegions]#λ,
+  A <: AnyAccount
+](val region: R, val account: A) extends AnySQSService {
 
-  type region = R
-  type account = A
+  type Region = R
+  type Account = A
 
   def endpoint = "https://" + namespace +"."+ region.name + host
 }
