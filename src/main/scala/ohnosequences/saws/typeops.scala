@@ -1,6 +1,6 @@
 package ohnosequences.saws
 
-import shapeless.TypeOperators._
+import shapeless._
 
 object typeOps {
   
