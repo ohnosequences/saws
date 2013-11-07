@@ -14,6 +14,20 @@ trait AnySQSService extends AnyService {
   // maybe queue.type??
   // it would be nice if we could bound the state to be just of Q
   def create[Q <: AnyQueue, S <: StateOf[Q]](queue: Q): (Q, S)
+
+  // this is all crap, but works as a start
+  def send[Q <: AnyQueue](message: Message[Q]): 
+    SentMessage[Message[Q]]
+
+  def receive[Q <: AnyQueue](queue: Q): 
+    ReceivedMessage[Message[Q]]
+
+  def timeout[Q <: AnyQueue](message: ReceivedMessage[Message[Q]], visibilityTimeout: Int):
+    ReceivedMessage[Message[Q]]
+
+  def delete[Q <: AnyQueue](message: ReceivedMessage[Message[Q]]): 
+    Unit
+
 }
 
 abstract class SQSService[

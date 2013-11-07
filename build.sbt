@@ -17,8 +17,13 @@ scalaVersion := "2.10.3"
 bucketSuffix := "era7.com"
 
 libraryDependencies ++= Seq (
-    "com.chuusai" %% "shapeless" % "1.2.4"
-  , "org.scalatest" %% "scalatest" % "1.9.2" % "test"
+  "com.chuusai" % "shapeless_2.10.2" % "2.0.0-M1",
+  "org.scalatest" %% "scalatest" % "1.9.2" % "test"
+  )
+
+resolvers ++= Seq(
+    "Sonatype OSS Releases"  at "http://oss.sonatype.org/content/repositories/releases/",
+    "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
   )
 
 scalacOptions ++= Seq(

@@ -1,6 +1,6 @@
 package ohnosequences.saws
 
-import shapeless.TypeOperators._
+import shapeless._
 
 object typeOps {
   
@@ -23,5 +23,8 @@ object typeOps {
 
   type oneOf[W <: OneOfAux] = {
     type λ[X] = ¬¬[X] <:< W#apply
+    type is[X] = ¬¬[X] <:< W#apply
   }
+
+  type either[T] = Is[T]
 }

@@ -10,7 +10,10 @@ trait AnyMessage {
   val body: String
 }
 
-case class Message[Q <: AnyQueue](val queue: Q)(val body: String){ type Queue = Q }
+case class Message[Q <: AnyQueue](val queue: Q)(val body: String) extends AnyMessage {
+ type Queue = Q 
+} 
+
 
 sealed trait AnyMessageState {
 
