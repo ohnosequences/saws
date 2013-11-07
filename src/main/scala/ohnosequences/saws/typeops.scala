@@ -22,6 +22,10 @@ object typeOps {
   trait Is[T] extends OneOf[¬[T]]
 
   type oneOf[W <: OneOfAux] = {
-    type λ[X] = ¬¬[X] <:< W#apply
+    type λ[X]  = ¬¬[X] <:< W#apply
+    type is[X] = ¬¬[X] <:< W#apply
   }
+
+  // stupid alias
+  type either[T] = Is[T]
 }

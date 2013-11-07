@@ -47,7 +47,6 @@ Then, a record is just a shapeless record; I don't know if it would be a good id
 We could have then something like `type RecordOf[S <: TypeSet]` for modeling an entry (_item_ in DynamoDB parlance).
 
 ``` scala
-
 sealed trait PrimaryKey
 trait HashKey {
   type HashKey  <: DynamoDBKeyAttribute
