@@ -41,19 +41,25 @@ object AnyQueueState {
   type of[Q <: AnyQueue] = AnyQueueState {  type Resource = Q  }
 }
 trait AnyQueueState extends AnyStateOf {  type Resource <: AnyQueue  }
+
   case class QueueState[Q <: AnyQueue](queue: Q)(
-    maxMssgSize: Int = 65536,
-    delaySeconds: Int = 0,
-    mssgRetentionPeriod: Int = 345600,
-    visibilityTimeout: Int = 30
-  ) extends AnyQueueState {
+    maxMssgSize: Int = 65536
+  , delaySeconds: Int = 0
+  , mssgRetentionPeriod: Int = 345600
+  , visibilityTimeout: Int = 30
+  )   extends AnyQueueState {
     type Resource = Q
-    val resource = queue
+    val  resource = queue
   }
   case class Unknown[Q <: AnyQueue](queue: Q) 
-    extends AnyQueueState {
+      extends AnyQueueState {
     type Resource = Q
-    val resource = queue
+    val  resource = queue
+  }
+  case class Deleted[Q <: AnyQueue](queue: Q) 
+      extends AnyQueueState {
+    type Resource = Q
+    val  resource = queue
   }
 
 // then, provide concrete class for Queue

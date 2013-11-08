@@ -62,8 +62,8 @@ trait DeleteQueue extends AnyAction {
   type Input  <: AnyQueue
   type Output = Input
 
-  type InputState   = Unknown[Input]
-  type OutputState  = Unknown[Output] :+: Errors :+: CNil
+  type InputState  = Unknown[Input]
+  type OutputState = Deleted[Output] :+: Errors :+: CNil
 
   // signal those outputs that are considered errors
   type Errors = Error
