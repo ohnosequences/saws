@@ -4,6 +4,8 @@ import ohnosequences.saws._
 import ohnosequences.saws.typeOps._
 import ohnosequences.saws.regions._
 
+import shapeless._
+
 
 trait AnySQSService extends AnyService {
 
@@ -35,8 +37,46 @@ trait AnySQSService extends AnyService {
 
 }
 
+trait CreateQueue extends AnyAction {
+
+  type Input  <: AnyQueue
+  type Output = Input
+
+  type InputState   = QueueState[Input]
+  type OutputState  = AnyQueueState.of[Output] :+: Errors :+: CNil
+
+  // signal those outputs that are considered errors
+  type Errors = Error
+  trait Error extends AnyQueueState {
+    type Resource = Output
+  }
+  // error! possible due to open unions
+  case class AlreadyCreated(queue: Input, state: InputState) 
+    extends Errors { val resource = queue }
+  case class RecentlyDeleted(queue: Input, state: InputState) 
+    extends Errors { val resource = queue }
+}
+
+trait DeleteQueue extends AnyAction {
+
+  type Input  <: AnyQueue
+  type Output = Input
+
+  type InputState   = Unknown[Input]
+  type OutputState  = Unknown[Output] :+: Errors :+: CNil
+
+  // signal those outputs that are considered errors
+  type Errors = Error
+  trait Error extends AnyQueueState {
+    type Resource = Output
+  }
+  // error! possible due to open unions
+  case class NonExistent(queue: Input, state: InputState) 
+    extends Error { val resource = queue }
+}
+
 abstract class SQSService[
-  R <: AnyRegion : oneOf[AnySQSService#validRegions]#λ,
+  R <: AnyRegion : oneOf[AnySQSService#validRegions]#is,
   A <: AnyAccount
 ](val region: R, val account: A) extends AnySQSService {
 

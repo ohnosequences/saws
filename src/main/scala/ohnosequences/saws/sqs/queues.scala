@@ -47,7 +47,11 @@ trait AnyQueueState extends AnyStateOf {  type Resource <: AnyQueue  }
     mssgRetentionPeriod: Int = 345600,
     visibilityTimeout: Int = 30
   ) extends AnyQueueState {
-
+    type Resource = Q
+    val resource = queue
+  }
+  case class Unknown[Q <: AnyQueue](queue: Q) 
+    extends AnyQueueState {
     type Resource = Q
     val resource = queue
   }
