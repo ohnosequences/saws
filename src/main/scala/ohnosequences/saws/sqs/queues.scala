@@ -22,9 +22,6 @@ trait AnyQueue extends AnyResource {
   
   val url = "http://"+ service.namespace +"."+ service.region.name +"."+ service.host +
             "/"+ service.account.id +"/"+ name
-
-  val arn: String
-
 }
 
 abstract class Queue[S <: AnySQSService](val service: S)(val name: Name) extends AnyQueue {
@@ -53,6 +50,9 @@ case class QueueState[Q <: AnyQueue](queue: Q)(
   type Queue = Q
   // val queue = queue
 }
+
+trait AlreadyThere extends AnyQueueState
+trait DeletedRecently extends AnyQueueState
 
 // then, provide concrete class for Queue
 // with package-private constructor

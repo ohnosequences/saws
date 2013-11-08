@@ -5,9 +5,9 @@ package ohnosequences.saws
 trait AnyResource {  
   type Service <: AnyService
   val service: Service
-  val arn: String
+  val arn: ARN
 }
-
+trait ARN
 trait AnyStateOf {  
   type Resource <: AnyResource
   val resource: Resource
