@@ -10,6 +10,9 @@ trait AnyResource {
 
 trait ARN
 
+object AnyState {
+  type of[R <: AnyResource] = AnyStateOf {  type Resource = R  }
+}
 trait AnyStateOf {  
   type Resource <: AnyResource
   val resource: Resource
@@ -17,5 +20,17 @@ trait AnyStateOf {
 abstract class StateOf[R <: AnyResource](r: R) {  
   type Resource = R
   val resource = r
+}
+
+// just experimenting...
+trait AnyAction {
+
+  type Input  <: AnyResource
+  type Output <: AnyResource
+
+  type InputState   <: AnyState.of[Input]
+  type OutputState  <: AnyState.of[Output]
+
+  def act(r: Input, s: InputState): (OutputState, Output)
 }
 

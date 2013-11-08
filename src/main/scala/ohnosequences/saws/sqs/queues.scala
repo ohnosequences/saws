@@ -1,7 +1,6 @@
 package ohnosequences.saws.sqs
 
-import ohnosequences.saws.{AnyResource, StateOf}
-
+import ohnosequences.saws._
 
 object QueueTypes {
   
@@ -13,6 +12,9 @@ import QueueTypes._
 
 // queue resource
 // region etc are derived from service
+object AnyQueue {
+  type from[S <: AnySQSService] = AnyQueue {  type Service = S  }
+}
 trait AnyQueue extends AnyResource {
   
   type Service <: AnySQSService
@@ -35,22 +37,20 @@ abstract class Queue[S <: AnySQSService](val service: S)(val name: Name) extends
 // http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/Query_QueryCreateQueue.html#Query_CreateQueue_RequestParameters
 // maybe records here instead of case classes?
 // should we include approxMssgCount and similar stuff here?
-
-trait AnyQueueState {
-
-  type Queue <: AnyQueue
-  val queue: Queue
+object AnyQueueState {
+  type of[Q <: AnyQueue] = AnyQueueState {  type Resource = Q  }
 }
-case class QueueState[Q <: AnyQueue](queue: Q)(
-  maxMssgSize: Int = 65536,
-  delaySeconds: Int = 0,
-  mssgRetentionPeriod: Int = 345600,
-  visibilityTimeout: Int = 30
-) extends AnyQueueState {
+trait AnyQueueState extends AnyStateOf {  type Resource <: AnyQueue  }
+  case class QueueState[Q <: AnyQueue](queue: Q)(
+    maxMssgSize: Int = 65536,
+    delaySeconds: Int = 0,
+    mssgRetentionPeriod: Int = 345600,
+    visibilityTimeout: Int = 30
+  ) extends AnyQueueState {
 
-  type Queue = Q
-  // val queue = queue
-}
+    type Resource = Q
+    val resource = queue
+  }
 
 // then, provide concrete class for Queue
 // with package-private constructor

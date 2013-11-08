@@ -7,19 +7,24 @@ import ohnosequences.saws.regions._
 
 trait AnySQSService extends AnyService {
 
+  type here = this.type
   type validRegions = Is[EU]#or[US]
   val namespace = "sqs"
 
   // add here bound for queue matching this service
   // maybe queue.type??
   // it would be nice if we could bound the state to be just of Q
-  def create[Q <: AnyQueue, S <: StateOf[Q]](queue: Q): (Q, S)
+  def create[
+      Q <: AnyQueue.from[here], 
+      S <: AnyQueueState.of[Q]
+    ](queue: Q): 
+      (queue.type, S)
 
   // this is all crap, but works as a start
-  def send[Q <: AnyQueue](message: Message[Q]): 
-    SentMessage[Message[Q]]
+  def sendTo[Q <: AnyQueue.from[here], M <: AnyMessage.from[Q]](message: M, queue: Q): 
+    SentMessage[M]
 
-  def receive[Q <: AnyQueue](queue: Q): 
+  def receive[Q <: AnyQueue.from[here]](queue: Q): 
     ReceivedMessage[Message[Q]]
 
   def timeout[Q <: AnyQueue](message: ReceivedMessage[Message[Q]], visibilityTimeout: Int):
