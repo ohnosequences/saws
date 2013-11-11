@@ -6,8 +6,27 @@ package object dynamodb {
 
   import shapeless._
 
-  trait AnyDynamoDBResource extends 
-    AnyResource { type Service <: AnyDynamoDBService }
+  trait AnyDynamoDBARN extends AnyARN {
+
+    type Resource <: AnyDynamoDBResource
+    val resource: Resource
+    def asString = "arn:aws"                +":"+ 
+      resource.service.namespace            +":"+ 
+      resource.service.region.toString      +":"+ 
+      resource.service.account.id.toString  +":"+
+      resource.asString
+  }
+  case class DynamoDBARN[R <: AnyDynamoDBResource](resource: R) extends AnyDynamoDBARN {
+    type Resource = R
+  }
+
+  trait AnyDynamoDBResource extends AnyResource { 
+
+    type Service <: AnyDynamoDBService
+    type ARN <: AnyDynamoDBARN
+    def asString: String
+  }
+  
   trait AnyDynamoDBStateOf 
     extends AnyStateOf { type Resource <: AnyDynamoDBResource }
 

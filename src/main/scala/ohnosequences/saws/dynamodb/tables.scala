@@ -30,8 +30,12 @@ trait AnyTable extends AnyDynamoDBResource {
       K <: PrimaryKey,
       S <: AnyDynamoDBService
     ](val key: K, val service: S) extends AnyTable {
-    type Key = K
-    type Service = S
+      type Key = K
+      type Service = S
+
+      type ARN = DynamoDBARN[this.type]
+      val arn = DynamoDBARN[this.type](this)
+      def asString = this.toString
   }
 trait AnyTableState extends AnyDynamoDBStateOf { 
 
