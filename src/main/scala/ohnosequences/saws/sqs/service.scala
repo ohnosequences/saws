@@ -75,6 +75,8 @@ trait DeleteQueue extends AnyAction {
     extends Error { val resource = queue }
 }
 
+
+
 abstract class SQSService[
   R <: AnyRegion : oneOf[AnySQSService#validRegions]#is,
   A <: AnyAccount

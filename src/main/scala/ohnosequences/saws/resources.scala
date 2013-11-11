@@ -31,6 +31,9 @@ trait AnyAction {
   type Output <: AnyResource
 
   type InputState   <: AnyState.of[Input]
+  // the point here is that you can match on both 
+  // - the "standard" output
+  // - the action-specific errors (if any)
   type OutputState  <: AnyState.of[Output] :+: Errors :+: CNil
 
   // signal those outputs that are considered errors
@@ -42,3 +45,27 @@ trait AnyAction {
   def act(r: Input, s: InputState): (OutputState, Output)
 }
 
+object AnyPolyAction {
+
+  type Resources <: HList
+  type StateFrom[Rs <: Resources]
+}
+trait AnyPolyAction {
+
+  import AnyPolyAction._
+  type Input  <: Resources
+  type Output <: Resources
+
+  type InputState   <: StateFrom[Input]
+  type OutputState  <: StateFrom[Output] :+: Errors :+: CNil
+  // the point here is that you can match on both 
+  // - the "standard" output
+  // - the action-specific errors (if any)
+
+  // signal those outputs that are considered errors
+  type Errors <: StateFrom[Output]
+
+  // needed?
+  // type Handler
+  def act(r: Input, s: InputState): (OutputState, Output)
+}
