@@ -34,7 +34,7 @@ package object dynamodb {
   type Bytes = Seq[Byte]
   type Num   = Int
   type Values = either[Num]#or[String]#or[Bytes]#or[Set[Num]]#or[Set[String]]#or[Set[Bytes]]
-  // not documented
+  // not documented; the API informs you about it if you try not to adhere to it
   type PrimaryKeyValues = either[String]#or[Num]
 
   type TableThroughput = ReadCapacity.type :: WriteCapacity.type :: HNil

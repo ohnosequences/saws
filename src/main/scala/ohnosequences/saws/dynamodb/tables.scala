@@ -6,7 +6,7 @@ import ohnosequences.saws.regions._
 
 trait AnyDynamoDBService extends AnyService {
 
-  type validRegions = Is[EU]#or[US]
+  type validRegions = either[EU]#or[US]
   val namespace = "dynamodb"
 }
 
@@ -20,11 +20,26 @@ abstract class DynamoDBService[
     def endpoint = "https://" + namespace +"."+ region.name + host
   }
 
-trait AnyTable extends AnyDynamoDBResource {
-  // as a type set etc
-  // type Attributes <: TypeSet
+trait AnyTable extends AnyDynamoDBResource { thisTable =>
+  
+  // the primary key for this table
   type Key <: PrimaryKey
   val key: Key
+
+  // as a type set bounded by the AnyAttribute type
+  // type Attributes <: TypeSet.of[AnyAttribute]
+  type Attributes
+
+  // the problem here is how to model the type of items conforming to that attribute; 
+  // in the shapeless records case we need HList[FieldType[attributes, attributes.value]]
+  
+  // I need this here due to SI-5712
+  // ideally it would be outside AnyTable
+  case class Item(attributes: thisTable.Attributes) {
+    type Table = thisTable.type
+    val table: Table = thisTable
+  }
+
 }
   abstract class Table[
       K <: PrimaryKey,
@@ -37,10 +52,15 @@ trait AnyTable extends AnyDynamoDBResource {
       val arn = DynamoDBARN[this.type](this)
       def asString = this.toString
   }
+
+// this models the table state
 trait AnyTableState extends AnyDynamoDBStateOf { 
 
-  type Resource <: AnyTable 
+  type Resource <: AnyTable
+
+  // dynamodb table throughput (this contains both read and write capacity)
   val throughput: TableThroughput
+  type Status <: AnyTableStatus
 }
 
 // table primary key ADT
@@ -66,11 +86,11 @@ sealed trait PrimaryKey
         type RangeKey = range.type
       }
 
-sealed trait TableStatus
-  case object CREATING extends TableStatus
-  case object UPDATING extends TableStatus
-  case object DELETING extends TableStatus
-  case object ACTIVE   extends TableStatus
+sealed trait AnyTableStatus
+  case object CREATING extends AnyTableStatus
+  case object UPDATING extends AnyTableStatus
+  case object DELETING extends AnyTableStatus
+  case object ACTIVE   extends AnyTableStatus
 
 // TODO do this with TypeSet-based and/or shapeless records
 case object ReadCapacity 
