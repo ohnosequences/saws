@@ -8,6 +8,7 @@ object testAttributes {
   case object name extends Attribute[String]
   case object id   extends Attribute[Int]
   case object age  extends Attribute[Int]
+  case object buh  extends Attribute[Set[String]]
   case object raw  extends Attribute[Bytes]
   // invalid value
   // case object ohnoes extends Attribute[List[String]]

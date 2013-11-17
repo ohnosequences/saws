@@ -10,8 +10,27 @@ object testTables {
 
   object users extends Table(
     pKey = Hash(id), 
-    keys = name :: id  :: age :: HNil,
+    keys = id :: name  :: age :: HNil,
     service = intercrossingDynamoEU
   ) {}
+
+  val user = users.Item(
+      (id ->> 23423)             ::
+      (name ->> "Paco Romero")   ::
+      (age ->> 34)               :: HNil
+    )
   
+  // this should not compile
+  // at least for a strict table or something like that
+  val user2 = users.Item(
+      (id ->> 23423)             ::
+      (age ->> 34)               :: HNil
+    )
+
+  // this should not compile in any case
+  // val user3 = users.Item(
+  //     (id ->> 23423)              ::
+  //     (buh ->> Set("oh", "argh")) ::
+  //     (age ->> 34)                :: HNil
+  //   )
 }
