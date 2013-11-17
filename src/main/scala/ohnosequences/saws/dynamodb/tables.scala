@@ -4,6 +4,8 @@ import ohnosequences.saws._
 import ohnosequences.saws.typeOps._
 import ohnosequences.saws.regions._
 
+import shapeless.{HList, KeyConstraint}
+
 trait AnyDynamoDBService extends AnyService {
 
   type validRegions = either[EU]#or[US]
@@ -23,29 +25,37 @@ abstract class DynamoDBService[
 trait AnyTable extends AnyDynamoDBResource { thisTable =>
   
   // the primary key for this table
-  type Key <: PrimaryKey
-  val key: Key
+  type PKey <: PrimaryKey
+  val pKey: PKey
 
   // as a type set bounded by the AnyAttribute type
   // type Attributes <: TypeSet.of[AnyAttribute]
-  type Attributes
+  type Keys <: HList
+  val keys: Keys
 
   // the problem here is how to model the type of items conforming to that attribute; 
   // in the shapeless records case we need HList[FieldType[attributes, attributes.value]]
-  
+  // we can do as with Deps in the Bundle case, and extract this type here through implicits
+  // _If_ using HLists we will need to modify KeyConstraint
+  // https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlistconstraints.scala#L75
+  // something like
+  type Attributes = {  type is[I <: HList] = KeyConstraint[I, Keys]  }
   // I need this here due to SI-5712
-  // ideally it would be outside AnyTable
-  case class Item(attributes: thisTable.Attributes) {
+  // ideally it would be outside AnyTable; but the best we can get right now in this case is
+  //    Item[T <: AnyTable, A <: HList: OfAttributesFrom[T]#is](attributes: A)
+  case class Item[I <: HList: thisTable.Attributes#is](attributes: I) {
     type Table = thisTable.type
     val table: Table = thisTable
   }
-
 }
   abstract class Table[
-      K <: PrimaryKey,
+      PK <: PrimaryKey,
+      K <: HList, // add here a key constraint
       S <: AnyDynamoDBService
-    ](val key: K, val service: S) extends AnyTable {
-      type Key = K
+    ](val pKey: PK, val keys: K, val service: S) extends AnyTable {
+
+      type PKey = PK
+      type Keys = K
       type Service = S
 
       type ARN = DynamoDBARN[this.type]
