@@ -6,13 +6,18 @@ import ohnosequences.saws.regions._
 
 import shapeless._
 
+object AnySQSService {
 
+  type validRegions = Is[EU]#or[US]
+  type validActions = Is[AnyCreateQueue]#or[DeleteQueue]
+}
 trait AnySQSService extends AnyService {
 
   type here = this.type
-  type validRegions = Is[EU]#or[US]
   val namespace = "sqs"
 
+
+  // def please[A <: AnyAction](action: A)
   // add here bound for queue matching this service
   // maybe queue.type??
   // it would be nice if we could bound the state to be just of Q
@@ -29,16 +34,16 @@ trait AnySQSService extends AnyService {
   def receive[Q <: AnyQueue.from[here]](queue: Q): 
     ReceivedMessage[Message[Q]]
 
-  def timeout[Q <: AnyQueue](message: ReceivedMessage[Message[Q]], visibilityTimeout: Int):
+  def timeout[Q <: AnyQueue.from[here]](message: ReceivedMessage[Message[Q]], visibilityTimeout: Int):
     ReceivedMessage[Message[Q]]
 
-  def delete[Q <: AnyQueue](message: ReceivedMessage[Message[Q]]): 
+  def delete[Q <: AnyQueue.from[here]](message: ReceivedMessage[Message[Q]]): 
     Unit
 
 }
 
 abstract class SQSService[
-  R <: AnyRegion : oneOf[AnySQSService#validRegions]#is,
+  R <: AnyRegion: oneOf[AnySQSService.validRegions]#is,
   A <: AnyAccount
 ](val region: R, val account: A) extends AnySQSService {
 
@@ -62,12 +67,14 @@ The main issue I have with this is how to declare that through a particular serv
 I wrote a bit about this in [resources](../resources.md).
 
 */
-trait CreateQueue extends AnyAction {
+sealed trait AnyCreateQueue extends AnyAction
+case class CreateQueue[Q <: AnyQueue, S <: QueueState[Q]](queue: Q, state: S) extends AnyCreateQueue {
 
-  type Input  <: AnyQueue
+  type Input = Q
+  type InputState = S
+
+  // note how here we're bounding the implementation to return the very same queue
   type Output = Input
-
-  type InputState   = QueueState[Input]
   type OutputState  = AnyQueueState.of[Output] :+: Errors :+: CNil
 
   // signal those outputs that are considered errors
@@ -81,6 +88,7 @@ trait CreateQueue extends AnyAction {
   case class RecentlyDeleted(queue: Input, state: InputState) 
     extends Errors { val resource = queue }
 }
+
 
 trait DeleteQueue extends AnyAction {
 

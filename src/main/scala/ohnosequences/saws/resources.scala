@@ -43,7 +43,7 @@ trait AnyAction {
   // type Handler
 
   /*
-  Maybe this should go somewher else; then a particular service could
+  Maybe this should go somewhere else; then a particular service could
   
   1. declare a list of actions that can perform, contained in the list of global actions
   2. implement them by providing a type class for each action `service.do(CreateQueue)` or `service please CreateQueue`
@@ -54,9 +54,44 @@ trait AnyAction {
   One way of making client code life easier would be to add a bound on `A` so as to be one of valid actions for that service.
 
   Looks like a really nice idea!
+
+  What could suppose a problem? the types of resources. 
+  The service implementation should be generic, with "syntax" methods wiring the particular action/s.
   */
   // def act(r: Input, s: InputState): (OutputState, Output)
 }
+
+trait AnyImplementation {
+
+  type Action <: AnyAction
+  val action: Action
+  type Service <: AnyService
+  val service: Service
+
+  def exec(r: action.Input, s: action.InputState): (action.OutputState, action.Output)
+}
+
+/*
+  
+  What do I want here? In the abstract, we have
+
+  1. a `service` with a declared set of actions
+  2. Given a particular `action` which `service` implements, we want to execute that action using our service on a particular `input`
+
+  A possible design is `service.please(action(input))` or `service please action(input)`. This means
+
+  - first we bound the types of the action using `input`; we should get a nice singleton type at this stage
+  - then, we call the generic implementation that our service provides using its `please` method; there we can do all sort of checks if they're needed
+
+  This way `AnyAction` becomes something which describes the input (both types and values) and informs you about what to expect from it as output.
+
+  Also, we can now implement all actions as case classes! genericity is outside.
+
+  def please[
+    A <: AnyAction: Implemented[here]#is
+  ](action: A)(implicit impl: Impl.for[action.type]): (action.OutputState, action.Output) = impl.exec(action)
+
+*/
 
 // object AnyPolyAction {
 
