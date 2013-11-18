@@ -9,9 +9,9 @@ object testTables {
   import testServices._
 
   object users extends Table(
-    pKey = Hash(id), 
-    keys = id :: name  :: age :: HNil,
-    service = intercrossingDynamoEU
+    primaryKey  = Hash(id), 
+    keys        = id :: name  :: age :: HNil,
+    service     = intercrossingDynamoEU
   ) {}
 
   val user = users.Item(
@@ -26,6 +26,12 @@ object testTables {
       (id ->> 23423)             ::
       (age ->> 34)               :: HNil
     )
+
+  val record =  (id ->> 23423)             ::
+                (name ->> "Paco Romero")   ::
+                (age ->> 34)               :: HNil
+
+  val itemFromRecord = users.Item(record)
 
   // this should not compile in any case
   // val user3 = users.Item(

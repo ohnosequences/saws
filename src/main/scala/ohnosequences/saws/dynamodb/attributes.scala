@@ -17,7 +17,6 @@ sealed trait AnyAttribute {
   }
 
 // I want to investigate here with the possibility of encoding Items as Records tagged with the corresponding Table (singleton) type
-
 object AnyItem {
 
   type ItemType[S <: HList, A <: HList] = A with SchemaTag[S, A]

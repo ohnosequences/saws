@@ -4,7 +4,6 @@ import shapeless._
 
 object typeOps {
   
-
   // after http://www.chuusai.com/2011/06/09/scala-union-types-curry-howard/#comment-179
   // Lars Hupel
   trait OneOfAux {
