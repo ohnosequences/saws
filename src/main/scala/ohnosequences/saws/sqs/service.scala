@@ -37,6 +37,31 @@ trait AnySQSService extends AnyService {
 
 }
 
+abstract class SQSService[
+  R <: AnyRegion : oneOf[AnySQSService#validRegions]#is,
+  A <: AnyAccount
+](val region: R, val account: A) extends AnySQSService {
+
+  type Region = R
+  type Account = A
+
+  def endpoint = "https://" + namespace +"."+ region.name + host
+}
+
+// example sqs service
+// case object sqs_service extends SQSService(EU, intercrossing)
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+/*
+### Actions
+
+The main issue I have with this is how to declare that through a particular service you can perform a set of actions.
+
+I wrote a bit about this in [resources](../resources.md).
+
+*/
 trait CreateQueue extends AnyAction {
 
   type Input  <: AnyQueue
@@ -59,6 +84,7 @@ trait CreateQueue extends AnyAction {
 
 trait DeleteQueue extends AnyAction {
 
+
   type Input  <: AnyQueue
   type Output = Input
 
@@ -76,17 +102,3 @@ trait DeleteQueue extends AnyAction {
 }
 
 
-
-abstract class SQSService[
-  R <: AnyRegion : oneOf[AnySQSService#validRegions]#is,
-  A <: AnyAccount
-](val region: R, val account: A) extends AnySQSService {
-
-  type Region = R
-  type Account = A
-
-  def endpoint = "https://" + namespace +"."+ region.name + host
-}
-
-// example sqs service
-// case object sqs_service extends SQSService(EU, intercrossing)

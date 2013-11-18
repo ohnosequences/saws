@@ -42,7 +42,20 @@ trait AnyAction {
   // needed?
   // type Handler
 
-  def act(r: Input, s: InputState): (OutputState, Output)
+  /*
+  Maybe this should go somewher else; then a particular service could
+  
+  1. declare a list of actions that can perform, contained in the list of global actions
+  2. implement them by providing a type class for each action `service.do(CreateQueue)` or `service please CreateQueue`
+
+  This type class could be generic: `Exec[S <: AnySerice, A <: AnyAction: From[S]#is](s: S, a: A)`
+  The abstract `please` method will just require that for `S = this.type` and `A` the particular action; an implicit not found means that your service does not have that action available.
+
+  One way of making client code life easier would be to add a bound on `A` so as to be one of valid actions for that service.
+
+  Looks like a really nice idea!
+  */
+  // def act(r: Input, s: InputState): (OutputState, Output)
 }
 
 // object AnyPolyAction {

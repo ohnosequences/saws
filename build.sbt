@@ -1,5 +1,3 @@
-import ohnosequences.sbt._
-
 Nice.scalaProject
 
 name := "saws"
