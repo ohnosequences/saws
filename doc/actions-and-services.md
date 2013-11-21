@@ -53,5 +53,10 @@ case class CreateQueue[Q <: AnyQueue, S <: QueueState[Q]](val queue: Q, val stat
 Note that there's not a single mention of a service here. Now, how can you say that your service provides this? An added difficulty is that what you return can be wrapped into an "execution context"; think of `Future[(action.Output, action.OutputState)]`. Given Scala limitations, this could work as a general pattern (if needed). Anyway, assuming that you want to return just the declared output type what you need is something from the action type to the corresponding output output state
 
 ``` scala
+// the bound here is for getting the input types right
 def exec[CQ <: AnyCreateQueueAction](val input: CQ): (input.Output, input.OutputState)
+```
+
+``` scala
+
 ```
