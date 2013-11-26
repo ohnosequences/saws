@@ -14,7 +14,6 @@
       + ohnosequences
         + [saws.scala](../saws.md)
         + experiments
-          + [abstractObjects.scala](../experiments/abstractObjects.md)
         + saws
           + sqs
             + [queues.scala](sqs/queues.md)

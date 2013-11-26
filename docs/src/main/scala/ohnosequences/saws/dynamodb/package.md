@@ -14,7 +14,6 @@
       + ohnosequences
         + [saws.scala](../../saws.md)
         + experiments
-          + [abstractObjects.scala](../../experiments/abstractObjects.md)
         + saws
           + sqs
             + [queues.scala](../sqs/queues.md)
@@ -68,7 +67,7 @@ package object dynamodb {
   }
   
   trait AnyDynamoDBStateOf 
-    extends AnyStateOf { type Resource <: AnyDynamoDBResource }
+    extends AnyState { type Resource <: AnyDynamoDBResource }
 
   // dynamodb type restrictions
   type Bytes = Seq[Byte]

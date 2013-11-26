@@ -14,7 +14,6 @@
       + ohnosequences
         + [saws.scala](../../../../../main/scala/ohnosequences/saws.md)
         + experiments
-          + [abstractObjects.scala](../../../../../main/scala/ohnosequences/experiments/abstractObjects.md)
         + saws
           + sqs
             + [queues.scala](../../../../../main/scala/ohnosequences/saws/sqs/queues.md)
