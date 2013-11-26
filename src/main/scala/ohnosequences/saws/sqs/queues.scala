@@ -24,7 +24,6 @@ trait AnyQueue extends AnyResource {
   
   val url = "http://"+ service.namespace +"."+ service.region.name +"."+ service.host +
             "/"+ service.account.id +"/"+ name
-
 }
 
 abstract class Queue[S <: AnySQSService]
@@ -38,7 +37,7 @@ abstract class Queue[S <: AnySQSService]
 object AnyQueueState {
   type of[Q <: AnyQueue] = AnyQueueState {  type Resource = Q  }
 }
-trait AnyQueueState extends AnyStateOf {  type Resource <: AnyQueue  }
+trait AnyQueueState extends AnyState {  type Resource <: AnyQueue  }
 
   case class QueueState[Q <: AnyQueue](queue: Q)(
     maxMssgSize: Int = 65536
@@ -60,16 +59,20 @@ trait AnyQueueState extends AnyStateOf {  type Resource <: AnyQueue  }
     val  resource = queue
   }
 
-// then, provide concrete class for Queue
-// with package-private constructor
-// so that it can only be instantiated through a service.
-// this should be an internal rep that the API user will never see
-// modifying attributes for example, should be done through the service
-// given a queue of the right type. This will return a QueueState or something similar
-// the idea is to wrap mutable attrs through StateOf[R <: Resource](r: R)
-// why? this way
-// 
-// - resources are static
-// - their state is not
-// 
-// which is as far as you can get without full dep types
+/*
+
+then, provide concrete class for Queue
+with package-private constructor
+so that it can only be instantiated through a service.
+this should be an internal rep that the API user will never see
+modifying attributes for example, should be done through the service
+given a queue of the right type. This will return a QueueState or something similar
+the idea is to wrap mutable attrs through StateOf[R <: Resource](r: R)
+why? this way
+
+- resources are static
+- their state is not
+
+which is as far as you can get without full dep types
+
+*/

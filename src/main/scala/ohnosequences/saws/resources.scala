@@ -7,15 +7,19 @@ import shapeless._
 trait AnyResource {  
   type Service <: AnyService
   val service: Service
+
+  type ARN <: AnyARN
   val arn: ARN
 }
 
-trait ARN
+object AnyARN {}
+trait AnyARN {}
 
 object AnyState {
-  type of[R <: AnyResource] = AnyStateOf {  type Resource = R  }
+
+  type of[R <: AnyResource] = AnyState { type Resource = R }
 }
-trait AnyStateOf {  
+trait AnyState {  
   type Resource <: AnyResource
   val resource: Resource
 }
