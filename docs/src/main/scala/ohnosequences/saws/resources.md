@@ -1,3 +1,42 @@
+### Index
+
++ src
+  + test
+    + scala
+      + ohnosequences
+        + saws
+          + dynamodb
+            + [items.scala](../../../../test/scala/ohnosequences/saws/dynamodb/items.md)
+            + [tables.scala](../../../../test/scala/ohnosequences/saws/dynamodb/tables.md)
+            + [services.scala](../../../../test/scala/ohnosequences/saws/dynamodb/services.md)
+  + main
+    + scala
+      + ohnosequences
+        + [saws.scala](../saws.md)
+        + experiments
+        + saws
+          + sqs
+            + [queues.scala](sqs/queues.md)
+            + [service.scala](sqs/service.md)
+            + [messages.scala](sqs/messages.md)
+          + [accounts.scala](accounts.md)
+          + [regions.scala](regions.md)
+          + [users.scala](users.md)
+          + dynamodb
+            + [package.scala](dynamodb/package.md)
+            + [tables.scala](dynamodb/tables.md)
+            + [attributes.scala](dynamodb/attributes.md)
+            + [services.scala](dynamodb/services.md)
+          + [typeops.scala](typeops.md)
+          + [resources.scala](resources.md)
+          + [services.scala](services.md)
+          + ec2
+            + [service.scala](ec2/service.md)
+
+------
+
+
+```scala
 package ohnosequences.saws
 
 import shapeless._
@@ -45,8 +84,8 @@ trait AnyAction {
 
   // needed?
   // type Handler
+```
 
-  /*
   Maybe this should go somewhere else; then a particular service could
   
   1. declare a list of actions that can perform, contained in the list of global actions
@@ -61,7 +100,9 @@ trait AnyAction {
 
   What could suppose a problem? the types of resources. 
   The service implementation should be generic, with "syntax" methods wiring the particular action/s.
-  */
+
+
+```scala
   // def act(r: Input, s: InputState): (OutputState, Output)
 }
 
@@ -74,8 +115,8 @@ trait AnyImplementation {
 
   def exec(r: action.Input, s: action.InputState): (action.OutputState, action.Output)
 }
+```
 
-/*
   
   What do I want here? In the abstract, we have
 
@@ -95,8 +136,9 @@ trait AnyImplementation {
     A <: AnyAction: Implemented[here]#is
   ](action: A)(implicit impl: Impl.for[action.type]): (action.OutputState, action.Output) = impl.exec(action)
 
-*/
 
+
+```scala
 // object AnyPolyAction {
 
 //   type Resources <: HList
@@ -121,3 +163,6 @@ trait AnyImplementation {
 //   // type Handler
 //   def act(r: Input, s: InputState): (OutputState, Output)
 // }
+
+```
+

@@ -4,7 +4,6 @@ import shapeless._
 
 object typeOps {
   
-
   // after http://www.chuusai.com/2011/06/09/scala-union-types-curry-howard/#comment-179
   // Lars Hupel
   trait OneOfAux {
@@ -22,9 +21,10 @@ object typeOps {
   trait Is[T] extends OneOf[¬[T]]
 
   type oneOf[W <: OneOfAux] = {
-    type λ[X] = ¬¬[X] <:< W#apply
+    type λ[X]  = ¬¬[X] <:< W#apply
     type is[X] = ¬¬[X] <:< W#apply
   }
 
-  type either[X] = Is[X]
+  // stupid alias
+  type either[T] = Is[T]
 }
