@@ -27,10 +27,8 @@ trait AnyQueue extends AnyResource {
 
 }
 
-abstract class Queue[S <: AnySQSService](val service: S)(val name: Name) extends AnyQueue {
-  
-  type Service = S
-}
+abstract class Queue[S <: AnySQSService]
+  (val service: S)(val name: Name) extends AnyQueue { type Service = S }
 
 // TODO: this should be a case class
 // with defaults for the default values for attrs

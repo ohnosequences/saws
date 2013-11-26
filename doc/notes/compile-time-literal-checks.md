@@ -1,4 +1,3 @@
-
 # compile-time checks of literals
 
 AWS requires a lot of funny constraints for literals across their APIs. As a simple example, for the name of a SQS queue

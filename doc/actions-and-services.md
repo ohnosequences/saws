@@ -56,7 +56,3 @@ Note that there's not a single mention of a service here. Now, how can you say t
 // the bound here is for getting the input types right
 def exec[CQ <: AnyCreateQueueAction](val input: CQ): (input.Output, input.OutputState)
 ```
-
-``` scala
-
-```
