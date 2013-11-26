@@ -11,7 +11,7 @@ trait AnyEC2Service extends AnyService {
 }
 
 abstract class EC2Service[
-  R <: AnyRegion : oneOf[EC2ServiceAux#validRegions]#λ,
+  R <: AnyRegion : oneOf[AnyEC2Service#validRegions]#λ,
   A <: AnyAccount
 ](val region: R, val account: A) extends AnyEC2Service {
 
@@ -25,7 +25,7 @@ abstract class EC2Service[
 
 object test {
 
-  def isOk[R <: AnyRegion : oneOf[EC2ServiceAux#validRegions]#λ](region: R) = true
+  def isOk[R <: AnyRegion : oneOf[AnyEC2Service#validRegions]#λ](region: R) = true
 
   isOk(EU)
   isOk(US)

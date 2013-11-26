@@ -5,8 +5,13 @@ package ohnosequences.saws
 trait AnyResource {  
   type Service <: AnyService
   val service: Service
-  val arn: String
+  type ARN <: AnyARN
+  val arn: ARN
 }
+
+object AnyARN {}
+trait AnyARN {}
+
 
 trait AnyStateOf {  
   type Resource <: AnyResource
