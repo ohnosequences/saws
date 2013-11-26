@@ -15,7 +15,7 @@ trait AnyAccount {
 }
 
 // sample
-case object intercrossing extends AccountAux {
+case object intercrossing extends AnyAccount {
   
   val id = Sized('8', '5', '4', '9', '2', '3', '7', '7', '4', '0', '4', '3')
 }

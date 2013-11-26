@@ -1,3 +1,43 @@
+### Index
+
++ src
+  + test
+    + scala
+      + ohnosequences
+        + saws
+          + dynamodb
+            + [items.scala](../../../../../test/scala/ohnosequences/saws/dynamodb/items.md)
+            + [tables.scala](../../../../../test/scala/ohnosequences/saws/dynamodb/tables.md)
+            + [services.scala](../../../../../test/scala/ohnosequences/saws/dynamodb/services.md)
+  + main
+    + scala
+      + ohnosequences
+        + [saws.scala](../../saws.md)
+        + experiments
+          + [abstractObjects.scala](../../experiments/abstractObjects.md)
+        + saws
+          + sqs
+            + [queues.scala](queues.md)
+            + [service.scala](service.md)
+            + [messages.scala](messages.md)
+          + [accounts.scala](../accounts.md)
+          + [regions.scala](../regions.md)
+          + [users.scala](../users.md)
+          + dynamodb
+            + [package.scala](../dynamodb/package.md)
+            + [tables.scala](../dynamodb/tables.md)
+            + [attributes.scala](../dynamodb/attributes.md)
+            + [services.scala](../dynamodb/services.md)
+          + [typeops.scala](../typeops.md)
+          + [resources.scala](../resources.md)
+          + [services.scala](../services.md)
+          + ec2
+            + [service.scala](../ec2/service.md)
+
+------
+
+
+```scala
 package ohnosequences.saws.sqs
 
 import ohnosequences.saws.{AnyResource, StateOf}
@@ -64,3 +104,5 @@ case class QueueState[Q <: AnyQueue](queue: Q)(
 // - their state is not
 // 
 // which is as far as you can get without full dep types
+```
+
