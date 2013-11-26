@@ -13,6 +13,8 @@
     + scala
       + ohnosequences
         + [saws.scala](../../saws.md)
+        + experiments
+          + [abstractObjects.scala](../../experiments/abstractObjects.md)
         + saws
           + sqs
             + [queues.scala](../sqs/queues.md)
@@ -41,31 +43,47 @@ package ohnosequences.saws.dynamodb
 import ohnosequences.saws._
 import ohnosequences.saws.typeOps._
 import ohnosequences.saws.regions._
+```
+
+These constraints should be specialized to this particular context
+
+```scala
 import shapeless.{HList, KeyConstraint}
 import shapeless.LUBConstraint._
 
-object AnyTable {}
 trait AnyTable extends AnyDynamoDBResource { thisTable =>
 ```
 
     The primary key of this table. I need to add a constraint for `primaryKey` being part of the `keys` of this table.
-    This is not as easy as it sounds: DynamoDB primary keys can consist of several keys.
+    This is not as easy as it sounds: DynamoDB primary keys can consist of several keys; we will thus need ad-hoc traversals across the `Keys` HList.
 
 
 ```scala
   type PrimaryKey <: AnyPrimaryKey
   val primaryKey: PrimaryKey
+```
 
+The set of keys for this table; they're supposed to be `Attribute`s in the end.
+
+```scala
   type Keys <: HList
   val keys: Keys
 ```
 
-    the problem here is how to model the type of items conforming to that attribute; 
-    in the shapeless records case we need HList[FieldType[attributes, attributes.value]]
+    the problem we have here is how to model the type of items conforming to that attribute; 
+    in the shapeless records case we need `HList[FieldType[attributes, attributes.value]]`
     we can do as with Deps in the Bundle case, and extract this type here through implicits
     _If_ using HLists we will need to modify KeyConstraint
     https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlistconstraints.scala#L75
-    something like
+
+    ### `TypeSet`s?
+
+    If using them for records, sa here can't be any duplicates, it will be enough to check just two things:
+
+    1. all of them come from `FieldValue`s from `Keys`
+    2. they have the same length
+
+    Anyway for now what we have is this, which only checks that all the fields that you add there are declared in `Keys`
 
 
 ```scala
@@ -73,8 +91,10 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
 ```
 
     I need this here due to SI-5712
-    ideally it would be outside AnyTable; but the best we can get right now in this case is
-      `Item[T <: AnyTable, A <: HList: OfAttributesFrom[T]#is](attributes: A)`
+    
+    Ideally it would be outside AnyTable; but the best we can get right now in this case is
+      
+    - `Item[T <: AnyTable, A <: HList: OfAttributesFrom[T]#is](attributes: A)`
 
 
 ```scala

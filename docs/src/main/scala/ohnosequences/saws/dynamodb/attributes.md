@@ -13,6 +13,8 @@
     + scala
       + ohnosequences
         + [saws.scala](../../saws.md)
+        + experiments
+          + [abstractObjects.scala](../../experiments/abstractObjects.md)
         + saws
           + sqs
             + [queues.scala](../sqs/queues.md)
@@ -41,20 +43,32 @@ package ohnosequences.saws.dynamodb
 import ohnosequences.saws._
 import ohnosequences.saws.typeOps._
 import shapeless._
+```
 
-// note that all this is OK independently of how we actually inmplement records
+  ## attributes
+
+  Attributes are just key-values in the DynamoDB terminology. Note that all these types are independent from any particular implementation of Items.
+
+
+```scala
 object AnyAttribute {
   type of[V] = AnyAttribute { type Value = V }
 }
-// this is sealed so that we can enforce the Value bound
-sealed trait AnyAttribute {
-  type Value
-}
-  class Attribute[V: oneOf[Values]#is] extends AnyAttribute with FieldOf[V] {
-    type Value = V
-  }
+```
 
-// I want to investigate here with the possibility of encoding Items as Records tagged with the corresponding Table (singleton) type
+this is sealed so that we can enforce the `Value` bound restricting it to be one of those valid for the the DynamoDB service
+
+```scala
+sealed trait AnyAttribute { type Value }
+
+  class Attribute[V: oneOf[Values]#is] extends AnyAttribute with FieldOf[V] { type Value = V }
+```
+
+  I want to investigate here with the possibility of encoding Items as Records tagged with the corresponding Table (singleton) type.
+  This way I could get rid of the nested `Item` case class.
+
+
+```scala
 object AnyItem {
 
   type ItemType[S <: HList, A <: HList] = A with SchemaTag[S, A]
