@@ -28,7 +28,7 @@ package object dynamodb {
   }
   
   trait AnyDynamoDBStateOf 
-    extends AnyStateOf { type Resource <: AnyDynamoDBResource }
+    extends AnyState { type Resource <: AnyDynamoDBResource }
 
   // dynamodb type restrictions
   type Bytes = Seq[Byte]
