@@ -53,8 +53,8 @@ import shapeless.LUBConstraint._
 trait AnyTable extends AnyDynamoDBResource { thisTable =>
 ```
 
-    The primary key of this table. I need to add a constraint for `primaryKey` being part of the `keys` of this table.
-    This is not as easy as it sounds: DynamoDB primary keys can consist of several keys; we will thus need ad-hoc traversals across the `Keys` HList.
+  The primary key of this table. I need to add a constraint for `primaryKey` being part of the `keys` of this table.
+  This is not as easy as it sounds: DynamoDB primary keys can consist of several keys; we will thus need ad-hoc traversals across the `Keys` HList.
 
 
 ```scala
@@ -69,31 +69,31 @@ The set of keys for this table; they're supposed to be `Attribute`s in the end.
   val keys: Keys
 ```
 
-    the problem we have here is how to model the type of items conforming to that attribute; 
-    in the shapeless records case we need `HList[FieldType[attributes, attributes.value]]`
-    we can do as with Deps in the Bundle case, and extract this type here through implicits
-    _If_ using HLists we will need to modify KeyConstraint
-    https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlistconstraints.scala#L75
+  the problem we have here is how to model the type of items conforming to that attribute; 
+  in the shapeless records case we need `HList[FieldType[attributes, attributes.value]]`
+  we can do as with Deps in the Bundle case, and extract this type here through implicits
+  _If_ using HLists we will need to modify KeyConstraint
+  https://github.com/milessabin/shapeless/blob/master/core/src/main/scala/shapeless/hlistconstraints.scala#L75
 
-    ### `TypeSet`s?
+  ### `TypeSet`s?
 
-    If using them for records, sa here can't be any duplicates, it will be enough to check just two things:
+  If using them for records, sa here can't be any duplicates, it will be enough to check just two things:
 
-    1. all of them come from `FieldValue`s from `Keys`
-    2. they have the same length
+  1. all of them come from `FieldValue`s from `Keys`
+  2. they have the same length
 
-    Anyway for now what we have is this, which only checks that all the fields that you add there are declared in `Keys`
+  Anyway for now what we have is this, which only checks that all the fields that you add there are declared in `Keys`
 
 
 ```scala
   type Attributes = {  type is[I <: HList] = KeyConstraint[I, Keys]  }
 ```
 
-    I need this here due to SI-5712
+  I need this here due to SI-5712
+  
+  Ideally it would be outside AnyTable; but the best we can get right now in this case is
     
-    Ideally it would be outside AnyTable; but the best we can get right now in this case is
-      
-    - `Item[T <: AnyTable, A <: HList: OfAttributesFrom[T]#is](attributes: A)`
+  - `Item[T <: AnyTable, A <: HList: OfAttributesFrom[T]#is](attributes: A)`
 
 
 ```scala
@@ -104,8 +104,8 @@ The set of keys for this table; they're supposed to be `Attribute`s in the end.
 }
 ```
 
-    A constructor for `AnyTable`; maybe I should seal the `AnyTable` trait and leave this as the only entry point.
-    The drawback is that abstract refinement becomes at best clumsy; but maybe that's a good thing!
+  A constructor for `AnyTable`; maybe I should seal the `AnyTable` trait and leave this as the only entry point.
+  The drawback is that abstract refinement becomes at best clumsy; but maybe that's a good thing!
 
 
 ```scala
