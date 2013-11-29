@@ -20,4 +20,33 @@ object testAttributes {
   val item: Item =  (id ->> 23423)             ::
                     (name ->> "Paco Romero")   ::
                     (age ->> 34)               :: HNil
+
+}
+
+import testAttributes._
+
+class ItemOps extends org.scalatest.FunSuite {
+
+  test("Convert items to HLists of tuples") {
+
+    val item =  (id ->> 3223)             ::
+                (name ->> "Antonio Roca") ::
+                (age ->> 52)              :: HNil
+
+    val attr = (id ->> 3223)
+    val attr_kv = attribute.toTuple(attr) 
+    assert(attr_kv === (id -> 3223))
+
+    val item_kv = item map attribute.toTuple
+    assert(
+      item_kv === (
+        (id -> 3223)             ::
+        (name -> "Antonio Roca") ::
+        (age -> 52)              :: HNil
+      )
+    )
+    // val kv_list = kv.toList
+    // println(kv)
+    // println(kv_list)
+  }
 }
