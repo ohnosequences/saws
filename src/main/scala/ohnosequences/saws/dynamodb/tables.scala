@@ -54,10 +54,10 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
     val table: Table = thisTable
   }
 }
-/*
+  /*  
   A constructor for `AnyTable`; maybe I should seal the `AnyTable` trait and leave this as the only entry point.
   The drawback is that abstract refinement becomes at best clumsy; but maybe that's a good thing!
-*/
+  */
   abstract class Table[
       PK <: AnyPrimaryKey,
       K <: HList: <<:[AnyAttribute]#λ, // add here a key constraint
@@ -82,17 +82,34 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
 trait AnyTableState extends AnyDynamoDBStateOf { 
 
   type Resource <: AnyTable
-
-  /*
-    this contains both read and write capacity units
+  /* this contains both read and write capacity units
   */
   val throughput: TableThroughput
-
   /*
     see `AnyTableStatus` for the possible values
   */
   type Status <: AnyTableStatus
   val status: Status
+}
+  // indexes maybe here
+  case class InitialState[T <: AnyTable](table: T, throughput: TableThroughput) 
+    extends AnyTableState {
+      type Resource = T
+      val  resource = table
+      type Status = NOTTHERE.type; val status = NOTTHERE
+  }
+
+
+  case class TableState[T <: AnyTable](table: T)(
+    created: Long,
+    size: Long
+
+  )
+
+object AnyTableState {
+
+  type of[T <: AnyTable] = AnyTableState { type Resource = T }
+  type status[S <: AnyTableStatus] = AnyTableState { type Status = S }
 }
 
 /*
@@ -126,13 +143,14 @@ sealed trait AnyPrimaryKey
       }
 
 sealed trait AnyTableStatus
+  case object NOTTHERE extends AnyTableStatus
   case object CREATING extends AnyTableStatus
   case object UPDATING extends AnyTableStatus
   case object DELETING extends AnyTableStatus
   case object ACTIVE   extends AnyTableStatus
 
 // TODO do this with TypeSet-based and/or shapeless records
-case object ReadCapacity 
+case object ReadCapacity
   // extends FieldOf[Int]
 case object WriteCapacity 
   // extends FieldOf[Int]

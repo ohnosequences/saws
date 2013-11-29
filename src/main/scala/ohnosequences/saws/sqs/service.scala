@@ -36,8 +36,8 @@ abstract class SQSService[
 
 object AnySQSService {
 
-  type validRegions = Is[EU]#or[US]
-  type validActions = Is[AnyCreateQueue]#or[AnyDeleteQueue]
+  type validRegions = either[EU]#or[US]
+  type validActions = either[AnyCreateQueue]#or[AnyDeleteQueue]
 
   trait AnyCreateQueue extends AnyAction {
 

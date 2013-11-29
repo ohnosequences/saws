@@ -25,7 +25,6 @@ object attribute {
 
   import shapeless.record._
   import shapeless.ops.record._
-  import shapeless.ops.record.Keys._
 
   object toTuple extends Poly1 {
 
