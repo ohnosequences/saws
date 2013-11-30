@@ -37,5 +37,7 @@ package object dynamodb {
   // not documented; the API informs you about it if you try not to adhere to it
   type PrimaryKeyValues = either[String]#or[Num]
 
-  type TableThroughput = ReadCapacity.type :: WriteCapacity.type :: HNil
+  import shapeless.record._
+  type TableThroughput =  FieldType[ReadCapacity.type, ReadCapacity.Value]   :: 
+                          FieldType[WriteCapacity.type, WriteCapacity.Value] :: HNil
 }

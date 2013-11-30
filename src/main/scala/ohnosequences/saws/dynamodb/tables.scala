@@ -9,7 +9,15 @@ import ohnosequences.saws.regions._
 import shapeless.{HList, KeyConstraint}
 import shapeless.LUBConstraint._
 
+object AnyTable {
+
+  type from[S <: AnyDynamoDBService] = AnyTable { type Service = S }
+}
 trait AnyTable extends AnyDynamoDBResource { thisTable =>
+
+  type Service <: AnyDynamoDBService
+  // maybe?
+  val service: Service
   
 /*
   The primary key of this table. I need to add a constraint for `primaryKey` being part of the `keys` of this table.
@@ -68,8 +76,8 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
       type Keys = K
       type Service = S
 
-      /*
-        all this is the resource part
+      /*  
+      all this is the resource part
       */
       type ARN = DynamoDBARN[this.type]
       val arn = DynamoDBARN[this.type](this)
@@ -82,29 +90,39 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
 trait AnyTableState extends AnyDynamoDBStateOf { 
 
   type Resource <: AnyTable
-  /* this contains both read and write capacity units
-  */
-  val throughput: TableThroughput
-  /*
-    see `AnyTableStatus` for the possible values
-  */
-  type Status <: AnyTableStatus
-  val status: Status
 }
   // indexes maybe here
   case class InitialState[T <: AnyTable](table: T, throughput: TableThroughput) 
     extends AnyTableState {
-      type Resource = T
-      val  resource = table
-      type Status = NOTTHERE.type; val status = NOTTHERE
+    type Resource = T
+    val  resource = table
+    type Status = NOTTHERE.type; val status = NOTTHERE
   }
 
+  trait AnyExistingTableState extends AnyTableState {
 
-  case class TableState[T <: AnyTable](table: T)(
-    created: Long,
-    size: Long
+    /* this contains both read and write capacity units
+    */
+    val throughput: TableThroughput
+  
+    type Status <: AnyExistingTableStatus
+    val status: Status
+    val created: Long
+    val size: Long
+  }
+    case class TableState[T <: AnyTable, S <: AnyExistingTableStatus](
+      val table: T,
+      val throughput: TableThroughput,
+      val status: S
+    )(
+      val created: Long,
+      val size: Long
+    ) extends AnyTableState {
 
-  )
+      type Resource = T
+      val  resource = table
+      type Status = S
+    }
 
 object AnyTableState {
 
@@ -144,13 +162,13 @@ sealed trait AnyPrimaryKey
 
 sealed trait AnyTableStatus
   case object NOTTHERE extends AnyTableStatus
-  case object CREATING extends AnyTableStatus
-  case object UPDATING extends AnyTableStatus
-  case object DELETING extends AnyTableStatus
-  case object ACTIVE   extends AnyTableStatus
+  sealed trait AnyExistingTableStatus extends AnyTableStatus
+    case object CREATING extends AnyExistingTableStatus
+    case object UPDATING extends AnyExistingTableStatus
+    case object DELETING extends AnyExistingTableStatus
+    case object ACTIVE   extends AnyExistingTableStatus
 
+import shapeless._
 // TODO do this with TypeSet-based and/or shapeless records
-case object ReadCapacity
-  // extends FieldOf[Int]
-case object WriteCapacity 
-  // extends FieldOf[Int]
+case object ReadCapacity  extends Attribute[Int]
+case object WriteCapacity extends Attribute[Int]

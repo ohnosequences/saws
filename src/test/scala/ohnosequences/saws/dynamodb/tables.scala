@@ -23,9 +23,9 @@ object testTables {
   // this should not compile
   // at least for a strict table or something like that
   val user2 = users.Item(
-      (id ->> 23423)             ::
-      (age ->> 34)               :: HNil
-    )
+    (id ->> 23423)  ::
+    (age ->> 34)    :: HNil
+  )
 
   val record =  (id ->> 23423)             ::
                 (name ->> "Paco Romero")   ::
@@ -39,4 +39,19 @@ object testTables {
   //     (buh ->> Set("oh", "argh")) ::
   //     (age ->> 34)                :: HNil
   //   )
+}
+
+class TableStateOps extends org.scalatest.FunSuite {
+
+  import testTables._
+
+  test("providing throughput values") {
+
+    val initialTroughput =  (ReadCapacity ->> 200)  ::
+                            (WriteCapacity ->> 150) :: HNil
+
+    val st = InitialState(users, initialTroughput)
+
+
+  }
 }

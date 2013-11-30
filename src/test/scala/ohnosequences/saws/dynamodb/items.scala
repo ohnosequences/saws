@@ -45,8 +45,5 @@ class ItemOps extends org.scalatest.FunSuite {
         (age -> 52)              :: HNil
       )
     )
-    // val kv_list = kv.toList
-    // println(kv)
-    // println(kv_list)
   }
 }
