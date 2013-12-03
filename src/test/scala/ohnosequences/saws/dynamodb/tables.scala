@@ -44,7 +44,7 @@ object testTables {
   import AnyDynamoDBService._
 
   val i = writeItem(users)(user)
-  val i2 = writeItem(users)(
+  val i2 =   writeItem(users)(
     users.Item(
       (id ->> 23423)  ::
       (age ->> 34)    :: HNil
