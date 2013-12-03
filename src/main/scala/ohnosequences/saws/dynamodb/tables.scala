@@ -12,6 +12,7 @@ import shapeless.LUBConstraint._
 object AnyTable {
 
   type from[S <: AnyDynamoDBService] = AnyTable { type Service = S }
+  // type AnyTableState[] = AnyDynamoDBStateOf[AnyTable]
 }
 trait AnyTable extends AnyDynamoDBResource { thisTable =>
 
@@ -41,7 +42,7 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
 
   ### `TypeSet`s?
 
-  If using them for records, sa here can't be any duplicates, it will be enough to check just two things:
+  If using them for records, as here there cannot be any duplicates, it is enough to check just two things:
 
   1. all of them come from `FieldValue`s from `Keys`
   2. they have the same length
@@ -57,6 +58,8 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
     
   - `Item[T <: AnyTable, A <: HList: OfAttributesFrom[T]#is](attributes: A)`
 */
+  // we should be able to get the type of Items from this table, so that we can get rid of the I parameter
+  // the implicit will disappear too
   case class Item[I <: HList: thisTable.Attributes#is](attributes: I) {
     type Table = thisTable.type
     val table: Table = thisTable
@@ -87,19 +90,19 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
 /*
   The state ADT for tables.
 */
-trait AnyTableState extends AnyDynamoDBStateOf { 
+trait AnyTableState extends AnyDynamoDBState {
 
   type Resource <: AnyTable
 }
-  // indexes maybe here
-  case class InitialState[T <: AnyTable](table: T, throughput: TableThroughput) 
-    extends AnyTableState {
-    type Resource = T
-    val  resource = table
-    type Status = NOTTHERE.type; val status = NOTTHERE
-  }
+// indexes maybe here
+case class InitialState[T <: AnyTable](table: T, throughput: TableThroughput) 
+  extends AnyTableState {
+  type Resource = T
+  val  resource = table
+  type Status = NOTTHERE.type; val status = NOTTHERE
+}
 
-  trait AnyExistingTableState extends AnyTableState {
+  trait AnyExistingTableState extends AnyTableState  {
 
     /* this contains both read and write capacity units
     */
@@ -128,6 +131,7 @@ object AnyTableState {
 
   type of[T <: AnyTable] = AnyTableState { type Resource = T }
   type status[S <: AnyTableStatus] = AnyTableState { type Status = S }
+  type withStatus[S <: AnyTableState] = { type is[s <: AnyTableStatus] = AnyTableState { type Status = s } }
 }
 
 /*

@@ -27,9 +27,13 @@ package object dynamodb {
     def asString: String
   }
   
-  trait AnyDynamoDBStateOf 
-    extends AnyState { type Resource <: AnyDynamoDBResource }
-
+  // just a bound
+  trait AnyDynamoDBState extends AnyState {
+ 
+   type Resource <: AnyDynamoDBResource 
+ }
+  type StateOf[R <: AnyDynamoDBResource] = { type is = AnyDynamoDBState { type Resource = R } }
+  
   // dynamodb type restrictions
   type Bytes = Seq[Byte]
   type Num   = Int

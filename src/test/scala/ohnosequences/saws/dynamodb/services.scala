@@ -12,13 +12,17 @@ object testServices {
 
     import shapeless.ops.coproduct._
 
+    // TODO move this to a case class with default impl
     def create[
       T <: AnyTable.from[here], 
       S <: InitialState[T]
     ](arg: AnyDynamoDBService.CreateTable[T,S]): (arg.Output, arg.OutputState) = {
 
-      val t: arg.Output = arg.table
-      val tp = arg.state.throughput
+      // get output types from arg in scope
+      import arg._
+
+      val t: Output = table
+      val tp = state.throughput
 
       val outState = TableState(
         table = t,
@@ -28,19 +32,22 @@ object testServices {
         created = System.nanoTime(),
         size = 0
       )
+
       if (outState.created % 2 == 0) {
         (
-          arg.table: arg.Output, 
-          Coproduct[arg.OutputState](outState)
+          table: Output, 
+          Coproduct[OutputState](outState)
         )
       } else {
         ( 
-          arg.table: arg.Output, 
-          Coproduct[arg.OutputState](arg.Exists: arg.Errors)
+          table: Output,
+          // I need to explicitly annotate Exists here
+          // looks like this will be needed whenever subtyping is involved
+          Coproduct[OutputState](Exists: Errors)
         )
       }
       
     }
-
   }
+
 }

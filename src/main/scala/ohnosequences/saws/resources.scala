@@ -18,12 +18,15 @@ trait AnyARN {}
 object AnyState {
 
   type of[R <: AnyResource] = AnyState { type Resource = R }
+
+  type StateOf[R <: AnyResource] = { type is = AnyState { type Resource <: R } }
 }
 trait AnyState {  
   type Resource <: AnyResource
   val resource: Resource
 }
-abstract class StateOf[R <: AnyResource](r: R) {  
+// is this useful??
+abstract class State[R <: AnyResource](r: R) {  
   type Resource = R
   val resource = r
 }
@@ -31,20 +34,13 @@ abstract class StateOf[R <: AnyResource](r: R) {
 // just experimenting...
 trait AnyAction {
 
+  // they will be the same, most likely
   type Input  <: AnyResource
   type Output <: AnyResource
 
-  type InputState   <: AnyState.of[Input]
-  // the point here is that you can match on both 
-  // - the "standard" output
-  // - the action-specific errors (if any)
-  type OutputState  <: AnyState.of[Output] :+: Errors :+: CNil
-
-  // signal those outputs that are considered errors
-  type Errors <: AnyState.of[Output]
-
-  // needed?
-  // type Handler
+  // no bounds here
+  type InputState
+  type OutputState
 
   /*
   Maybe this should go somewhere else; then a particular service could
@@ -63,6 +59,28 @@ trait AnyAction {
   The service implementation should be generic, with "syntax" methods wiring the particular action/s.
   */
   // def act(r: Input, s: InputState): (OutputState, Output)
+}
+
+trait AnyModifyResource extends AnyAction {
+
+  import AnyState.StateOf
+
+  type Input <: AnyResource
+  type Output <: AnyResource
+
+  type InputState <: StateOf[Input]#is
+  // the point here is that you can match on both 
+  // - the "standard" output
+  // - the action-specific errors (if any)
+  type OutputState  <: StateOf[Output]#is :+: Errors :+: CNil
+
+  // signal those outputs that are considered errors
+  type Errors <: StateOf[Output]#is
+}
+
+trait AnyModifyResourceState extends AnyModifyResource {
+
+  type Output = Input
 }
 
 trait AnyImplementation {

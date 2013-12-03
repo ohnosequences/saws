@@ -39,11 +39,24 @@ object testTables {
   //     (buh ->> Set("oh", "argh")) ::
   //     (age ->> 34)                :: HNil
   //   )
+
+  // check the writeItem thing
+  import AnyDynamoDBService._
+
+  val i = writeItem(users)(user)
+  val i2 = writeItem(users)(
+    users.Item(
+      (id ->> 23423)  ::
+      (age ->> 34)    :: HNil
+    )
+  )
 }
 
 class TableStateOps extends org.scalatest.FunSuite {
 
   import testTables._
+  import testServices._
+  import AnyDynamoDBService._
 
   test("providing throughput values") {
 
@@ -51,6 +64,10 @@ class TableStateOps extends org.scalatest.FunSuite {
                             (WriteCapacity ->> 150) :: HNil
 
     val st = InitialState(users, initialTroughput)
+
+    val o = intercrossingDynamoEU.create(
+      CreateTable(users,st)
+    )
 
 
   }

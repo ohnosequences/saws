@@ -14,10 +14,9 @@ trait AnyDynamoDBService extends AnyService {
   type here = this.type
 
   def create[
-      T <: AnyTable.from[here], 
-      S <: InitialState[T]
-    ](arg: AnyDynamoDBService.CreateTable[T,S]): (arg.Output, arg.OutputState)
-
+    T <: AnyTable.from[here], 
+    S <: InitialState[T]
+  ](arg: AnyDynamoDBService.CreateTable[T,S]): (arg.Output, arg.OutputState)
 }
 
 abstract class DynamoDBService[
@@ -32,16 +31,12 @@ abstract class DynamoDBService[
 
 object AnyDynamoDBService {
 
-  trait AnyCreateTable extends AnyAction {
+  import AnyTable._
+
+  trait AnyCreateTable extends AnyModifyResourceState {
 
     // note how here we're bounding the implementation to return the very same table
     type Input        <: AnyTable
-    // this should be not there
-    type InputState   <: AnyTableState.of[Input]
-    type Output       <: Input
-    type OutputState  <: AnyTableState.of[Output] :+: Errors :+: CNil
-
-    type Errors       <: AnyTableState.of[Output]
   }
 
   case class CreateTable[T <: AnyTable, S <: InitialState[T]](
@@ -51,11 +46,8 @@ object AnyDynamoDBService {
 
     // note how here we're bounding the implementation to return the very same table
     type Input        = T
-    type InputState   = S
     // TODO impl this
-    type Output        = Input
     type OutputState   = TableState[Output, CREATING.type] :+: Errors :+: CNil
-
     type Errors       = Error
 
     sealed trait Error extends AnyTableState { type Resource = Output; val resource = table }
@@ -65,4 +57,27 @@ object AnyDynamoDBService {
 
   }
 
-} 
+  trait AnyWriteItem extends AnyAction {
+
+    import AnyTableState._
+    type Input <: AnyTable
+    val table: Input
+    type I <: HList
+    // type InputState <: of[Input] with status[ACTIVE.type] :: table.Item[I] :: HNil
+    type InputState <: table.Item[I] :: HNil
+    val state: InputState
+  }
+
+  // no dep constructors, ugly workaround
+  // TODO move this to TableOps
+  def writeItem[T <: AnyTable, I0 <: HList](t: T)(i: t.Item[I0]): AnyWriteItem = new AnyWriteItem {
+
+    type I = I0
+    type Input = t.type
+    val table: t.type = t
+    type InputState = t.Item[I0] :: HNil
+    val state: table.Item[I] :: HNil = i :: HNil
+  }
+  // case class writeItem[T <: AnyTable, I <: HList](val table: T)(val item: table.Item[I])
+
+  } 
