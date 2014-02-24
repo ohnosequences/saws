@@ -73,7 +73,7 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
       PK <: AnyPrimaryKey,
       K <: HList: <<:[AnyAttribute]#λ, // add here a key constraint
       S <: AnyDynamoDBService
-    ](val primaryKey: PK, val keys: K, val service: S) extends AnyTable {
+    ](val primaryKey: PK, val keys: K, val service: S) extends AnyTable with AnyDynamoDBResource {
 
       type PrimaryKey = PK
       type Keys = K
@@ -83,7 +83,7 @@ trait AnyTable extends AnyDynamoDBResource { thisTable =>
       all this is the resource part
       */
       type ARN = DynamoDBARN[this.type]
-      val arn = DynamoDBARN[this.type](this)
+      val arn: ARN = DynamoDBARN[this.type](this:this.type)
       def asString = this.toString
   }
 

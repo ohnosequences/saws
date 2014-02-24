@@ -66,10 +66,18 @@ object AnyDynamoDBService {
     // type InputState <: of[Input] with status[ACTIVE.type] :: table.Item[I] :: HNil
     type InputState <: table.Item[I] :: HNil
     val state: InputState
+
+    type Output = Input
+    type OutputState = Errors :+: CNil
+
+    sealed trait Errors
+      case class ItemTooBig(val item: table.Item[I]) extends Errors
+      case object WrongTableState extends Errors
+
   }
 
   // no dep constructors, ugly workaround
-  // TODO move this to TableOps
+  // TODO move this to TableOps?
   def writeItem[T <: AnyTable, I0 <: HList](t: T)(i: t.Item[I0]): AnyWriteItem = new AnyWriteItem {
 
     type I = I0
@@ -80,4 +88,4 @@ object AnyDynamoDBService {
   }
   // case class writeItem[T <: AnyTable, I <: HList](val table: T)(val item: table.Item[I])
 
-  } 
+}

@@ -83,15 +83,20 @@ trait AnyModifyResourceState extends AnyModifyResource {
   type Output = Input
 }
 
-trait AnyImplementation {
+// TODO: make action input a nested class inside the action module. This way you get the abstract bounds in the enclosing scope
+trait AnyFunnyAction {
 
-  type Action <: AnyAction
-  val action: Action
-  type Service <: AnyService
-  val service: Service
+  type Input <: AnyResource
+  type InputState 
 
-  def exec(r: action.Input, s: action.InputState): (action.OutputState, action.Output)
+  class input[I <: Input, S <: InputState](val input: I, val state: S) {
+
+    type Output
+    type OutputState
+  }
 }
+// after this, you can execute a generic action, which will be a singleton object
+// this can be done using statika or just plain objects as in the record case
 
 /*
   
