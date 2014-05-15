@@ -9,13 +9,16 @@ import shapeless._
 
   Attributes are just key-values in the DynamoDB terminology. Note that all these types are independent from any particular implementation of Items.
 */
-object AnyAttribute {
-  type of[V] = AnyAttribute { type Value = V }
-}
+
 /*
   this is sealed so that we can enforce the `Value` bound restricting it to be one of those valid for the the DynamoDB service
 */
 sealed trait AnyAttribute { type Value }
+
+object AnyAttribute {
+
+  type of[V] = AnyAttribute { type Value = V }
+}
 
   class Attribute[V: oneOf[Values]#is] extends AnyAttribute with FieldOf[V] { type Value = V }
 
